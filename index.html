@@ -1,0 +1,223 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Documentación API de Sanciones</title>
+    <style>
+        :root {
+            --primary: #2563eb;
+            --bg: #f8fafc;
+            --text: #1e293b;
+            --border: #e2e8f0;
+        }
+        body {
+            font-family: system-ui, -apple-system, sans-serif;
+            line-height: 1.6;
+            color: var(--text);
+            background-color: var(--bg);
+            max-width: 900px;
+            margin: 0 auto;
+            padding: 2rem;
+        }
+        header {
+            border-bottom: 2px solid var(--border);
+            margin-bottom: 2rem;
+            padding-bottom: 1rem;
+        }
+        h1, h2, h3 { color: #0f172a; }
+        .card {
+            background: white;
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            padding: 1.5rem;
+            margin-bottom: 2rem;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+        }
+        code {
+            background-color: #f1f5f9;
+            padding: 0.2rem 0.4rem;
+            border-radius: 4px;
+            font-family: monospace;
+            font-size: 0.9em;
+            color: #b91c1c;
+        }
+        pre {
+            background-color: #1e293b;
+            color: #f8fafc;
+            padding: 1rem;
+            border-radius: 8px;
+            overflow-x: auto;
+            font-family: monospace;
+        }
+        pre code {
+            background-color: transparent;
+            color: inherit;
+            padding: 0;
+        }
+        .form-group {
+            margin-bottom: 1rem;
+        }
+        label {
+            display: block;
+            font-weight: 600;
+            margin-bottom: 0.5rem;
+        }
+        input {
+            width: 100%;
+            padding: 0.5rem;
+            border: 1px solid var(--border);
+            border-radius: 4px;
+            box-sizing: border-box;
+        }
+        button {
+            background-color: var(--primary);
+            color: white;
+            border: none;
+            padding: 0.75rem 1.5rem;
+            border-radius: 4px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: background 0.2s;
+        }
+        button:hover { background-color: #1d4ed8; }
+        .grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 2rem;
+        }
+        @media (max-width: 768px) {
+            .grid { grid-template-columns: 1fr; }
+        }
+    </style>
+</head>
+<body>
+
+    <header>
+        <h1>Documentación: API de Sanciones</h1>
+        <p>Esta API permite verificar si una empresa, persona, país o dirección IP se encuentra dentro de una lista restringida de entidades sancionadas.</p>
+    </header>
+
+    <main>
+        <section class="card">
+            <h2>1. Endpoints y Parámetros</h2>
+            <p>La API responde a peticiones <code>GET</code> o <code>POST</code>. La URL base asumida es <code>sanciones.php</code>.</p>
+            <ul>
+                <li><strong><code>q</code> (String):</strong> Busca coincidencias en nombres de empresas o actores (ej. <i>Navitas</i>, <i>Samuel Moody</i>).</li>
+                <li><strong><code>country</code> (String):</strong> Busca si el país está en la lista de regiones sancionadas (ej. <i>Reino Unido</i>, <i>Israel</i>, <i>Canada</i>).</li>
+                <li><strong><code>ip</code> (String):</strong> Geolocaliza la dirección IP y verifica si el país resultante tiene sanciones (ej. <i>142.250.217.110</i>).</li>
+            </ul>
+            <p><em>Nota: Puedes combinar los parámetros en una sola petición.</em></p>
+        </section>
+
+        <section class="grid">
+            <!-- Formulario interactivo -->
+            <div class="card">
+                <h2>2. Consola de Pruebas</h2>
+                <form id="apiForm">
+                    <div class="form-group">
+                        <label for="q">Término de búsqueda (Empresa/Persona)</label>
+                        <input type="text" id="q" name="q" placeholder="Ej. Rockhopper o Navitas">
+                    </div>
+                    <div class="form-group">
+                        <label for="country">País / Región</label>
+                        <input type="text" id="country" name="country" placeholder="Ej. Israel o Canadá">
+                    </div>
+                    <div class="form-group">
+                        <label for="ip">Dirección IP (Geolocalización)</label>
+                        <input type="text" id="ip" name="ip" placeholder="Ej. 142.250.217.110">
+                    </div>
+                    <button type="submit">Consultar API</button>
+                </form>
+            </div>
+
+            <!-- Visor de resultados -->
+            <div class="card">
+                <h2>Respuesta JSON</h2>
+                <pre id="jsonResponse">Esperando consulta...</pre>
+                <div id="loading" style="display:none; color: var(--primary); font-weight: bold; margin-top: 1rem;">Consultando...</div>
+            </div>
+        </section>
+
+        <section class="card">
+            <h2>3. Ejemplo de Integración en JavaScript</h2>
+            <p>Así es como puedes consumir esta API desde tu propia aplicación utilizando <code>fetch()</code>:</p>
+<pre><code>// 1. Definir los parámetros de búsqueda
+const params = new URLSearchParams({
+    q: 'Fugro',
+    country: 'Países Bajos'
+});
+
+// 2. Hacer la petición a la API
+fetch(`sanciones.php?${params.toString()}`)
+    .then(response => response.json())
+    .then(data => {
+        if (data.is_sanctioned) {
+            console.warn("ALERTA: Entidad sancionada detectada.");
+            console.log("Coincidencias:", data.matches);
+        } else {
+            console.log("La entidad está limpia.");
+        }
+    })
+    .catch(error => console.error("Error en la API:", error));
+</code></pre>
+        </section>
+        
+        <section class="card">
+            <h2>4. Código Fuente y fuente de información</h2>
+            <p>Puede descargar el código fuente de <a href="sim-segulupa.zip" target="_blank">acá</a>.</p>
+            <p>La fuente de información es <a href="https://www.lanacion.com.ar/politica/la-lista-de-empresas-y-accionistas-que-sancionara-el-gobierno-por-operaciones-en-las-islas-malvinas-nid04092026/" target="_blank">La Nación</a>.</p>
+        </section>
+        
+    </main>
+
+    <script>
+        // Lógica de la consola de pruebas interactiva
+        document.getElementById('apiForm').addEventListener('submit', function(e) {
+            e.preventDefault(); // Evita que la página se recargue
+            
+            const resultBox = document.getElementById('jsonResponse');
+            const loading = document.getElementById('loading');
+            
+            // Recoger los valores del formulario
+            const q = document.getElementById('q').value.trim();
+            const country = document.getElementById('country').value.trim();
+            const ip = document.getElementById('ip').value.trim();
+            
+            // Si todo está vacío, pedir al usuario que llene algo
+            if (!q && !country && !ip) {
+                resultBox.innerHTML = '<span style="color: #ef4444;">Por favor, completa al menos un campo para buscar.</span>';
+                return;
+            }
+
+            // Construir los parámetros de la URL
+            const params = new URLSearchParams();
+            if (q) params.append('q', q);
+            if (country) params.append('country', country);
+            if (ip) params.append('ip', ip);
+
+            // Mostrar estado de carga
+            resultBox.textContent = '';
+            loading.style.display = 'block';
+
+            // Realizar la petición Fetch a la API local
+            fetch(`sanciones.php?${params.toString()}`)
+                .then(response => {
+                    if (!response.ok) throw new Error('Error en la red o servidor no encontrado.');
+                    return response.json();
+                })
+                .then(data => {
+                    // Formatear el JSON para que se vea bonito en el <pre>
+                    resultBox.textContent = JSON.stringify(data, null, 4);
+                })
+                .catch(error => {
+                    resultBox.innerHTML = `<span style="color: #ef4444;">Error: ${error.message}
+<br><br>⚠️ Asegúrate de estar ejecutando esto en un servidor local (XAMPP, WAMP, etc.) y que el archivo "sanciones.php" exista en la misma ruta.</span>`;
+                })
+                .finally(() => {
+                    loading.style.display = 'none';
+                });
+        });
+    </script>
+</body>
+</html>

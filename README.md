@@ -5,3 +5,5 @@ Dominio público, con código fuente para decargar e implementar en cualquier si
 100% dominio público.
 
 Demostración online: https://sim.segulupa.com
+
+Instancias: https://github.com/diagrama42/sancionesmalvinasargentinas/wiki/Instancias
